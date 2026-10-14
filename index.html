@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#102c50">
+<title>SmartStudent AI</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f6fc;
+    color: #172b4d;
+}
+
+header {
+    background: #102c50;
+    color: white;
+    padding: 24px 18px;
+    border-radius: 0 0 25px 25px;
+}
+
+.brand {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.brand span {
+    color: #57e0b0;
+}
+
+header p {
+    line-height: 1.5;
+    color: #d8e5f5;
+}
+
+main {
+    max-width: 650px;
+    margin: auto;
+    padding: 18px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px #102c5010;
+}
+
+h2 {
+    font-size: 19px;
+    margin-top: 0;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin: 15px 0 7px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+input, select {
+    border: 1px solid #d5deeb;
+    background: white;
+}
+
+button {
+    border: none;
+    background: #087f65;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 12px;
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+.secondary {
+    background: #e7f7f1;
+    color: #087f65;
+}
+
+.hint {
+    font-size: 13px;
+    color: #63738a;
+    line-height: 1.5;
+}
+
+.badge {
+    display: inline-block;
+    background: #e7f7f1;
+    color: #087f65;
+    padding: 7px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.course {
+    margin-bottom: 10px;
+}
+
+#exam, #results {
+    display: none;
+}
+
+.progress {
+    height: 8px;
+    background: #e5ebf3;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+#progressBar {
+    width: 0;
+    height: 100%;
+    background: #087f65;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px;
+    border: 1px solid #d5deeb;
+    border-radius: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.option input {
+    width: auto;
+}
+
+.option.selected {
+    border-color: #087f65;
+    background: #e7f7f1;
+}
+
+.navButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.navButtons button {
+    flex: 1;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: #63738a;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">SmartStudent <span>AI</span> 🎓</div>
+    <p>Study smarter. Practise confidently. Prepare for your exams.</p>
+    <span class="badge">YOUR PERSONAL CBT PRACTICE PARTNER</span>
+</header>
+
+<main>
+
+<section id="setup">
+
+    <div class="card">
+        <h2>📚 Create your practice exam</h2>
+        <p class="hint">
+            Choose your university, enter your courses and upload your
+            study materials to prepare a personalised practice exam.
+        </p>
+
+        <label for="university">Select university</label>
+        <select id="university">
+            <option value="NOUN">National Open University of Nigeria (NOUN)</option>
+            <option value="OTHER">Other university</option>
+        </select>
+
+        <div id="otherUniversity" style="display:none">
+            <label for="universityName">University name</label>
+            <input id="universityName" placeholder="Enter university name">
+        </div>
+
+        <label>Course codes (up to five)</label>
+
+        <div id="courses">
+            <input class="course" placeholder="Course 1 e.g. GST101">
+            <input class="course" placeholder="Course 2 e.g. MTH101">
+            <input class="course" placeholder="Course 3 e.g. CSC101">
+            <input class="course" placeholder="Course 4 (optional)">
+            <input class="course" placeholder="Course 5 (optional)">
+        </div>
+
+        <label for="pdfs">Upload course materials (PDF)</label>
+        <input id="pdfs" type="file" accept=".pdf,application/pdf" multiple>
+
+        <p class="hint">
+            Select PDFs that you are permitted to use. This demo does not
+            yet read PDFs or send them to an AI service.
+        </p>
+
+        <button onclick="startDemo()">Try the CBT demo →</button>
+    </div>
+
+    <div class="card">
+        <h2>✨ Your study tools</h2>
+        <p>📝 Multiple-choice practice</p>
+        <p>⏱️ Timed exam experience</p>
+        <p>✅ Automatic marking</p>
+        <p>💡 Answer explanations</p>
+        <p>📈 Results to guide your revision</p>
+        <p class="hint">AI question generation and PDF analysis will be added next.</p>
+    </div>
+
+</section>
+
+<section id="exam">
+    <div class="card">
+        <span class="badge" id="courseBadge">PRACTICE EXAM</span>
+        <h2 id="examTitle">CBT Practice</h2>
+        <p id="timer">⏱️ 10:00</p>
+        <p id="questionNumber"></p>
+        <div class="progress"><div id="progressBar"></div></div>
+        <h3 id="questionText"></h3>
+        <div id="options"></div>
+        <p class="hint" id="questionHint"></p>
+
+        <div class="navButtons">
+            <button class="secondary" onclick="move(-1)">← Previous</button>
+            <button onclick="move(1)">Next →</button>
+        </div>
+
+        <button class="secondary" onclick="toggleFlag()">🚩 Flag for review</button>
+        <button onclick="submitExam()">Submit exam</button>
+    </div>
+</section>
+
+<section id="results">
+    <div class="card">
+        <h2>🎉 Your results</h2>
+        <h1 id="score"></h1>
+        <p id="resultMessage"></p>
+        <div id="review"></div>
+        <button onclick="restart()">Practise again</button>
+    </div>
+</section>
+
+</main>
+
+<footer>SmartStudent AI · Built to help students prepare smarter</footer>
+
+<script>
+const demoQuestions = [
+    {
+        course: "GST101",
+        question: "What is the main purpose of taking notes while studying?",
+        options: [
+            "To avoid reading",
+            "To record important information",
+            "To replace every textbook",
+            "To finish studying immediately"
+        ],
+        answer: 1,
+        explanation: "Good notes help you record, organise and revise important information."
+    },
+    {
+        course: "MTH101",
+        question: "What is 5 + 7?",
+        options: ["10", "11", "12", "13"],
+        answer: 2,
+        explanation: "Adding five and seven gives twelve."
+    },
+    {
+        course: "CSC101",
+        question: "Which of these is a computer input device?",
+        options: ["Monitor", "Printer", "Speaker", "Keyboard"],
+        answer: 3,
+        explanation: "A keyboard sends data and instructions into a computer."
+    }
+];
+
+let questions = [];
+let current = 0;
+let answers = {};
+let flagged = new Set();
+let remaining = 600;
+let clock = null;
+let finished = false;
+
+document.getElementById("university").addEventListener("change", function() {
+    document.getElementById("otherUniversity").style.display =
+        this.value === "OTHER" ? "block" : "none";
+});
+
+function startDemo() {
+    const courses = [...document.querySelectorAll(".course")]
+        .map(input => input.value.trim())
+        .filter(Boolean);
+
+    if (courses.length === 0) {
+        alert("Please enter at least one course code.");
+        return;
+    }
+
+    if (new Set(courses.map(c => c.toUpperCase())).size !== courses.length) {
+        alert("Please remove duplicate course codes.");
+        return;
+    }
+
+    if (document.getElementById("university").value === "OTHER" &&
+        !document.getElementById("universityName").value.trim()) {
+        alert("Please enter your university name.");
+        return;
+    }
+
+    const pdfInput = document.getElementById("pdfs");
+
+    if (pdfInput.files.length > 0) {
+        const invalid = [...pdfInput.files].some(file =>
+            file.type !== "application/pdf" &&
+            !file.name.toLowerCase().endsWith(".pdf")
+        );
+
+        if (invalid) {
+            alert("Please select PDF files only.");
+            return;
+        }
+    }
+
+    questions = demoQuestions.map(q => ({...q, options: [...q.options]}));
+    current = 0;
+    answers = {};
+    flagged = new Set();
+    remaining = 600;
+    finished = false;
+
+    document.getElementById("setup").style.display = "none";
+    document.getElementById("exam").style.display = "block";
+    document.getElementById("results").style.display = "none";
+
+    renderQuestion();
+    clearInterval(clock);
+
+    clock = setInterval(() => {
+        if (finished) return;
+
+        remaining--;
+        document.getElementById("timer").textContent =
+            "⏱️ " +
+            Math.floor(remaining / 60).toString().padStart(2, "0") +
+            ":" +
+            (remaining % 60).toString().padStart(2, "0");
+
+        if (remaining <= 0) submitExam();
+    }, 1000);
+}
+
+function renderQuestion() {
+    const q = questions[current];
+
+    document.getElementById("questionNumber").textContent =
+        "Question " + (current + 1) + " of " + questions.length;
+
+    document.getElementById("progressBar").style.width =
+        ((current + 1) / questions.length * 100) + "%";
+
+    document.getElementById("courseBadge").textContent = q.course;
+    document.getElementById("questionText").textContent = q.question;
+    document.getElementById("questionHint").textContent =
+        flagged.has(current) ? "🚩 Flagged for review" : "";
+
+    const options = document.getElementById("options");
+    options.innerHTML = "";
+
+    q.options.forEach((option, index) => {
+        const label = document.createElement("label");
+        label.className = "option" + (answers[current] === index ? " selected" : "");
+
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "answer";
+        radio.checked = answers[current] === index;
+
+        radio.addEventListener("change", () => {
+            answers[current] = index;
+            renderQuestion();
+        });
+
+        const text = document.createElement("span");
+        text.textContent = String.fromCharCode(65 + index) + ". " + option;
+
+        label.append(radio, text);
+        options.appendChild(label);
+    });
+}
+
+function move(direction) {
+    const next = current + direction;
+
+    if (next < 0 || next >= questions.length) return;
+
+    current = next;
+    renderQuestion();
+}
+
+function toggleFlag() {
+    if (flagged.has(current)) {
+        flagged.delete(current);
+    } else {
+        flagged.add(current);
+    }
+
+    renderQuestion();
+}
+
+function submitExam() {
+    if (finished) return;
+
+    if (remaining > 0 &&
+        !confirm("Are you sure you want to submit your exam?")) {
+        return;
+    }
+
+    finished = true;
+    clearInterval(clock);
+
+    const score = questions.reduce((total, q, i) =>
+        total + (answers[i] === q.answer ? 1 : 0), 0);
+
+    document.getElementById("exam").style.display = "none";
+    document.getElementById("results").style.display = "block";
+    document.getElementById("score").textContent =
+        score + " / " + questions.length;
+
+    document.getElementById("resultMessage").textContent =
+        "You scored " + Math.round(score / questions.length * 100) +
+        "%. Review the explanations below to identify what to revise.";
+
+    const review = document.getElementById("review");
+    review.innerHTML = "";
+
+    questions.forEach((q, i) => {
+        const item = document.createElement("div");
+        item.className = "card";
+
+        const heading = document.createElement("h3");
+        heading.textContent = (i + 1) + ". " + q.question;
+
+        const response = document.createElement("p");
+        response.textContent = "Your answer: " +
+            (answers[i] === undefined ? "Not answered" :
+             String.fromCharCode(65 + answers[i]) + ". " + q.options[answers[i]]);
+
+        const correct = document.createElement("p");
+        correct.textContent = "Correct answer: " +
+            String.fromCharCode(65 + q.answer) + ". " + q.options[q.answer];
+
+        const explanation = document.createElement("p");
+        explanation.textContent = "Explanation: " + q.explanation;
+
+        item.append(heading, response, correct, explanation);
+        review.appendChild(item);
+    });
+
+    try {
+        localStorage.setItem("smartstudent-last-result", JSON.stringify({
+            score,
+            total: questions.length,
+            date: new Date().toISOString()
+        }));
+    } catch (error) {
+        console.warn("Could not save results on this device.");
+    }
+}
+
+function restart() {
+    clearInterval(clock);
+    document.getElementById("results").style.display = "none";
+    document.getElementById("setup").style.display = "block";
+}
+</script>
+
+</body>
+  </html>
